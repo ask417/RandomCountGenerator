@@ -70,7 +70,6 @@ class RandomCountGenerator:
         '''
         Randomly select variables proportional to their corresponding weights
 
-        :param dict values_with_weights: Labels with their relative weight
         :return: The randomly selected value according to the given distribution
         :rtype: int
         '''
@@ -144,7 +143,8 @@ class RandomCountGenerator:
         :return: Map of frequency percentages
         :rtype: dict
         '''
-        return {k: "{0}%".format(100 * float(v) / self._total) for k, v in self.rolling_counts.iteritems()}
+        total = sum(self.rolling_counts.values())
+        return {k: "{0}%".format(100 * float(v) / total) for k, v in self.rolling_counts.iteritems()}
 
 
 
@@ -157,7 +157,10 @@ def check_output(filename):
             try:
                 items = line.split()
                 dt = items[0] + " " + items[1]
-                dt = datetime.strptime(dt, "%Y-%m-%d %H:%M:%S.%f")
+                try:
+                    dt = datetime.strptime(dt, "%Y-%m-%d %H:%M:%S.%f")
+                except:
+                    dt = datetime.strptime(dt, "%Y-%m-%d %H:%M:%S")
                 if dt < previous:
                     print "Sequence gap: {0} | {1}".format(str(previous), str(dt))
                     no_gaps = False
@@ -181,10 +184,11 @@ if __name__ == "__main__":
 
     rcg = RandomCountGenerator(probs, num_random_selectors, log_filename)
     while not rcg.threads_completed():
+        print rcg.get_frequencies()
         time.sleep(1)
     time.sleep(1)
     check_output(log_filename)
-    
+
     #Testing from single threaded version
     # for i in range(100000):
     #     rcg.weighted_selection()
