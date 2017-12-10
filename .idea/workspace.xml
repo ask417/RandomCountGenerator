@@ -26,8 +26,8 @@
       <file leaf-file-name="RandomCountGenerator.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/RandomCountGenerator.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="150">
-              <caret line="75" column="41" selection-start-line="75" selection-start-column="41" selection-end-line="75" selection-end-column="41" />
+            <state relative-caret-position="375">
+              <caret line="25" column="7" selection-start-line="25" selection-start-column="7" selection-end-line="25" selection-end-column="7" />
               <folding>
                 <element signature="e#0#13#0" expanded="true" />
               </folding>
@@ -333,8 +333,8 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/RandomCountGenerator.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="150">
-          <caret line="75" column="41" selection-start-line="75" selection-start-column="41" selection-end-line="75" selection-end-column="41" />
+        <state relative-caret-position="375">
+          <caret line="25" column="7" selection-start-line="25" selection-start-column="7" selection-end-line="25" selection-end-column="7" />
           <folding>
             <element signature="e#0#13#0" expanded="true" />
           </folding>

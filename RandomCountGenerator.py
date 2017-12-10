@@ -1,7 +1,7 @@
 import random
 from Queue import Queue
 from collections import defaultdict
-
+from datetime import datetime, date
 
 def weighted_selection(values_with_weights):
     '''
@@ -23,19 +23,17 @@ class RandomCountGenerator:
     """
     Object for generating weighted random selections and tracking a rolling
     element frequency
-
     ...
-
     Attributes
     ----------
     values_with_weights : dict
         Labels with their relative weights
-
     """
     def __init__(self, values_with_weights):
         self.last_100_elements = Queue(maxsize=100)
         self.values_with_weights = values_with_weights
         self.rolling_counts = {k:0 for k in self.values_with_weights.keys()}
+        self.log_file = open("random_selections.log", "wb")
 
     def weighted_selection(self):
         '''
@@ -54,6 +52,10 @@ class RandomCountGenerator:
                 return k
             start += v
 
+    def write_single_threaded(self):
+        now = str(datetime.now())
+        self.log_file.write("{0} {1}\n".format(self.last_100_elements.queue[-1], now))
+
     def add_element(self, element):
         if self.last_100_elements.qsize() < 100:
             self.last_100_elements.put(element)
@@ -62,6 +64,7 @@ class RandomCountGenerator:
             removed = self.last_100_elements.get()
             self.last_100_elements.put(element)
             self.update_counts(element, removed)
+
 
     def update_counts(self, added, removed = None):
         if removed is not None:
@@ -87,4 +90,5 @@ if __name__ == "__main__":
         rcg.weighted_selection()
         if i%10000 == 0 :
             print rcg.get_frequencies()
+            rcg.write_single_threaded()
 
