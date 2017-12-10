@@ -1,4 +1,5 @@
 import random
+import threading
 from Queue import Queue
 from collections import defaultdict
 from datetime import datetime, date
@@ -31,9 +32,13 @@ class RandomCountGenerator:
     """
     def __init__(self, values_with_weights):
         self.last_100_elements = Queue(maxsize=100)
+        self.output_queue = Queue()
         self.values_with_weights = values_with_weights
         self.rolling_counts = {k:0 for k in self.values_with_weights.keys()}
         self.log_file = open("random_selections.log", "wb")
+        writer = threading.Thread(target=self.write_multi_threaded)
+        writer.start()
+
 
     def weighted_selection(self):
         '''
@@ -56,7 +61,19 @@ class RandomCountGenerator:
         now = str(datetime.now())
         self.log_file.write("{0} {1}\n".format(self.last_100_elements.queue[-1], now))
 
+    #Should be spinning and listening to the Queue
+    def write_multi_threaded(self):
+        while True:
+            item = self.output_queue.get(block=True)
+            self.log_file.write(item)
+
+
+    #Basically, we'll need to add a lock that
     def add_element(self, element):
+        now = str(datetime.now())
+        pair = "{0} {1}\n".format(now, element)
+        self.output_queue.put(pair)
+        #Probably need to add a lock here so we don't get any race conditions
         if self.last_100_elements.qsize() < 100:
             self.last_100_elements.put(element)
             self.update_counts(element)
@@ -88,7 +105,7 @@ if __name__ == "__main__":
 
     for i in range(100000):
         rcg.weighted_selection()
-        if i%10000 == 0 :
+        if i%10000 == 0:
             print rcg.get_frequencies()
             rcg.write_single_threaded()
 
