@@ -39,6 +39,16 @@ class RandomCountGenerator:
         writer = threading.Thread(target=self.write_multi_threaded)
         writer.start()
 
+        for i in range(5):
+            random_selector = threading.Thread(target=self.weighted_selection_continuous, args=[i])
+            random_selector.start()
+
+
+    def weighted_selection_continuous(self, thread_id):
+        while True:
+            print "start: {0}".format(thread_id)
+            self.weighted_selection()
+            print "end: {0}".format(thread_id)
 
     def weighted_selection(self):
         '''
@@ -92,6 +102,22 @@ class RandomCountGenerator:
         return {k:v/100.0 for k,v in self.rolling_counts.iteritems()}
 
 
+
+def check_output(filename):
+    previous = datetime.min
+    with open(filename, "rb") as f:
+        lines = f.readlines()
+        for line in lines:
+            try:
+                items = line.split()
+                dt = items[0] + " " + items[1]
+                dt = datetime.strptime(dt, "%Y-%m-%d %H:%M:%S.%f")
+                if dt < previous:
+                    print "Sequence gap: {0} | {1}".format(str(previous), str(dt))
+                previous = dt
+            except Exception as e:
+                print e
+
 if __name__ == "__main__":
     probs = {1:50, 2:25, 3:15, 4:5, 5:5 }
     counts = defaultdict(int)
@@ -103,9 +129,9 @@ if __name__ == "__main__":
 
     rcg = RandomCountGenerator(probs)
 
-    for i in range(100000):
-        rcg.weighted_selection()
-        if i%10000 == 0:
-            print rcg.get_frequencies()
-            rcg.write_single_threaded()
+    # for i in range(100000):
+    #     rcg.weighted_selection()
+    #     if i%10000 == 0:
+    #         print rcg.get_frequencies()
+    #         rcg.write_single_threaded()
 
